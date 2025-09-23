@@ -1,0 +1,26 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-label="EquinoX logo">
+  <!-- Background gradient circle -->
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6d5efc"/>
+      <stop offset="100%" stop-color="#5a7bff"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="60" fill="url(#g1)" opacity="0.15"/>
+
+  <!-- Stylized E and X monogram -->
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <!-- E: three horizontal bars with a spine -->
+    <path d="M36 38 H78" stroke-width="8" opacity="0.9"/>
+    <path d="M36 64 H66" stroke-width="8" opacity="0.9"/>
+    <path d="M36 90 H78" stroke-width="8" opacity="0.9"/>
+    <path d="M36 34 V94" stroke-width="6" opacity="0.6"/>
+
+    <!-- X: crossing strokes, centered right-side -->
+    <path d="M84 44 L108 84" stroke-width="8" opacity="0.9"/>
+    <path d="M108 44 L84 84" stroke-width="8" opacity="0.9"/>
+  </g>
+
+  <!-- Subtle highlight ring -->
+  <circle cx="64" cy="64" r="56" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2" fill="none"/>
+</svg>

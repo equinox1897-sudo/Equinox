@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vault‑X • Promo Flier</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: radial-gradient(120% 120% at 0% 0%, rgba(109,94,252,0.14) 0%, rgba(109,94,252,0) 40%), linear-gradient(180deg, #0a0f17, #06090f 70%);
+      --panel: #0e1420;
+      --panel-2: #0b101b;
+      --text: #e6e9ef;
+      --muted: #93a0b3;
+      --accent: #6d5efc;
+      --accent-2: #5a7bff;
+      --line: rgba(255,255,255,0.08);
+      --success: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial; color: var(--text); background: var(--bg); }
+
+    .frame { min-height: 100%; padding: 28px 18px 28px; display:flex; justify-content:center; }
+    .container { width: 1024px; max-width: 96vw; }
+
+    .header { display:flex; align-items:center; justify-content:space-between; gap: 12px; margin-bottom: 18px; }
+    .brand { display:flex; align-items:center; gap: 10px; font-weight: 900; letter-spacing: .2px; }
+    .logo { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(180deg, var(--accent), var(--accent-2)); display:grid; place-items:center; box-shadow: 0 6px 18px rgba(109,94,252,.35); }
+    .logo img { width: 18px; height: 18px; display:block; }
+    .badge { padding: 6px 10px; border-radius: 999px; background: rgba(109,94,252,.14); border: 1px solid rgba(109,94,252,.35); color: var(--text); font-weight: 700; font-size: 12px; }
+    .dl { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; border:1px solid var(--line); background: rgba(255,255,255,0.04); color: var(--text); cursor:pointer; font-weight:800; }
+    .panel { background: linear-gradient(180deg, var(--panel), var(--panel-2)); border: 1px solid var(--line); border-radius: 16px; padding: 22px; box-shadow: 0 24px 56px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04); }
+
+    .hero { display:grid; grid-template-columns: 1.2fr 1fr; gap: 18px; align-items:center; }
+    .title { font-size: clamp(28px, 5.2vw, 48px); font-weight: 900; margin: 6px 0 10px; }
+    .subtitle { color: var(--muted); font-weight: 600; }
+    .cta-row { display:flex; gap: 10px; margin-top: 16px; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; border-radius:12px; border:1px solid transparent; cursor:pointer; color:white; font-weight:800; text-decoration:none; }
+    .btn.primary { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    .btn.ghost { background: transparent; border-color: var(--line); color: var(--text); }
+
+    .hero-card { position: relative; overflow: hidden; border-radius: 16px; padding: 18px; background: #141a28; border: 1px solid var(--line); }
+    .hero-card .mc { position:absolute; right:-10%; top:-22%; width:70%; height:140%; border-radius:999px; background: radial-gradient(circle at 35% 35%, rgba(109,94,252,.45), rgba(90,123,255,.35) 60%, transparent 61%); }
+    .hero-card .head { display:flex; align-items:center; justify-content:space-between; }
+    .hero-card .brand { font-size: 18px; }
+    .hero-card .num { letter-spacing: 0.22em; font-weight: 800; font-size: 20px; margin: 1.1em 0 .6em; }
+    .hero-card .meta { display:flex; gap: 1.2em; opacity:.9; font-size: 12px; }
+
+    .qr { display:grid; place-items:center; gap:6px; border:1px solid var(--line); border-radius:12px; padding:10px; background: rgba(255,255,255,0.03); width: max-content; }
+    .qr img { width: 140px; height: 140px; image-rendering: pixelated; }
+    .qr-row { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items:center; }
+    .tile-col { display:grid; gap: 12px; }
+
+    .grid { display:grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 18px; }
+    .tile { padding: 16px; border-radius: 14px; border:1px solid var(--line); background: rgba(255,255,255,0.03); }
+    .tile h3 { margin: 0 0 8px; font-size: 16px; }
+    .muted { color: var(--muted); }
+
+    .definition { margin-top: 18px; padding: 18px; border-radius: 14px; border:1px solid var(--line); background: rgba(255,255,255,0.03); }
+    .definition h2 { margin: 0 0 10px; font-size: 20px; }
+
+    .footer { text-align:center; margin-top: 22px; color: var(--muted); font-size: 12px; }
+
+    @media (max-width: 880px){
+      .hero { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="container">
+      <div class="header">
+        <div class="brand"><div class="logo"><img src="favicon.svg" alt="VX"/></div><div>VAULT‑X</div></div>
+        <button id="downloadFlierBtn" class="dl" type="button">Download Flyer</button>
+      </div>
+
+      <div class="panel hero">
+        <div>
+          <div class="badge">Announcement</div>
+          <div class="title">Vault‑X: The Next‑Generation Cryptocurrency for the New Era</div>
+          <div class="subtitle">Fast. Secure. Designed for everyday finance and digital assets.</div>
+        </div>
+        <div class="hero-card">
+          <div class="mc"></div>
+          <div class="head">
+            <div class="brand"><div class="logo"><img src="favicon.svg" alt="VX"/></div><div>VAULT‑X</div></div>
+          </div>
+          <div class="num">VAULT‑X • VX • 2025</div>
+          <div class="meta">
+            <div><div style="opacity:.7;">speed</div><div style="font-weight:800;">sub‑second finality</div></div>
+            <div><div style="opacity:.7;">security</div><div style="font-weight:800;">hardware‑backed</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top: 14px;">
+        <div class="qr-row">
+          <div class="qr">
+            <img id="appQr" alt="Scan to open the app" />
+            <div class="muted">Scan to open the web app</div>
+          </div>
+          <div class="tile-col">
+            <div class="tile">
+              <h3>Built for Payments</h3>
+              <div class="muted">Near‑instant transfers and seamless in‑app settlement.</div>
+            </div>
+            <div class="tile">
+              <h3>Security First</h3>
+              <div class="muted">Multi‑sig custody and privacy‑preserving proofs keep your funds protected.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="definition">
+        <h2>What is Vault‑X (VX)?</h2>
+        <div class="muted">Vault‑X (VX) is a digital currency powering the Vault X ecosystem. VX is designed to enable low‑latency transactions and frictionless integration with stocks and options workflows inside the app. Users can invest in Vault‑X by buying stocks and options through the Vault‑X wallet.</div>
+        <div style="margin-top:10px;">
+          <div style="font-weight:800;">Partnership</div>
+          <div class="muted">Vault‑X is presented in partnership with Elon Musk to advance adoption and real‑world utility.</div>
+        </div>
+        
+      </div>
+
+      
+
+      <div class="footer">
+        <div>© 2025 Vault X. All rights reserved.</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function inlineVaultXLogo(){
+      try {
+        var logoImgs = Array.prototype.slice.call(document.querySelectorAll('.logo img'));
+        if (!logoImgs.length) return;
+        function blobToDataURL(blob){
+          return new Promise(function(resolve){
+            var reader = new FileReader();
+            reader.onload = function(){ resolve(reader.result); };
+            reader.readAsDataURL(blob);
+          });
+        }
+        fetch('favicon.svg').then(function(res){ return res.ok ? res.blob() : Promise.reject(); })
+          .then(blobToDataURL)
+          .then(function(dataUrl){
+            logoImgs.forEach(function(img){
+              img.crossOrigin = 'anonymous';
+              img.src = dataUrl;
+            });
+          })
+          .catch(function(){ /* ignore; keep original src */ });
+      } catch(e) { /* no-op */ }
+    })();
+
+    (function makeQr(){
+      var img = document.getElementById('appQr');
+      if (!img) return;
+      var targetUrl = (location.origin || '') + '/home';
+
+      function generateWithLib(){
+        try {
+          window.QRCode.toDataURL(targetUrl, { width: 140, margin: 1, errorCorrectionLevel: 'M' }, function(err, url){
+            if (err) { fallbackExternal(); return; }
+            img.src = url;
+            img.alt = 'Scan to open the web app';
+          });
+        } catch(e) { fallbackExternal(); }
+      }
+
+      function ensureQrLib(){
+        return new Promise(function(resolve, reject){
+          if (window.QRCode && window.QRCode.toDataURL) { resolve(); return; }
+          var s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+          s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
+        });
+      }
+
+      function fallbackExternal(){
+        // As a last resort, use an external endpoint that typically sets CORS headers
+        var encoded = encodeURIComponent(targetUrl);
+        var external = 'https://quickchart.io/qr?size=140&margin=1&text=' + encoded;
+        img.crossOrigin = 'anonymous';
+        img.src = external;
+        img.alt = 'Scan to open the web app';
+      }
+
+      ensureQrLib().then(generateWithLib).catch(fallbackExternal);
+    })();
+
+    (function enableFlierDownload(){
+      var btn = document.getElementById('downloadFlierBtn');
+      if (!btn) return;
+      btn.addEventListener('click', async function(){
+        try {
+          // Ensure html2canvas is available
+          async function ensureH2C(){
+            if (window.html2canvas) return true;
+            await new Promise(function(resolve, reject){
+              var s = document.createElement('script');
+              s.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+              s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
+            });
+            return !!window.html2canvas;
+          }
+
+          if (!(await ensureH2C())) throw new Error('html2canvas not available');
+
+          // Target the main flyer container within the frame
+          var container = document.querySelector('.container');
+          if (!container) throw new Error('container not found');
+
+          // Ensure images (logos, QR) are fully loaded before capture
+          async function ensureImagesLoaded(root){
+            var imgs = Array.prototype.slice.call(root.querySelectorAll('img'));
+            if (!imgs.length) return;
+            await Promise.all(imgs.map(function(img){
+              return new Promise(function(resolve){
+                try {
+                  if (!img) { resolve(); return; }
+                  if (img.complete && img.naturalWidth > 0) { resolve(); return; }
+                  var done = function(){ cleanup(); resolve(); };
+                  var fail = function(){ cleanup(); resolve(); };
+                  function cleanup(){ try { img.removeEventListener('load', done); img.removeEventListener('error', fail); } catch {} }
+                  img.addEventListener('load', done);
+                  img.addEventListener('error', fail);
+                  setTimeout(done, 1500);
+                } catch { resolve(); }
+              });
+            }));
+          }
+
+          await ensureImagesLoaded(container);
+
+          // Hide the download button so it doesn't appear in the export
+          var prevBtnDisplay = btn.style.display;
+          btn.style.display = 'none';
+
+          // Temporarily add a white-ish background for export clarity
+          var prevBg = container.style.background;
+          container.style.background = 'linear-gradient(180deg, #0a0f17, #06090f)';
+
+          var canvas = await window.html2canvas(container, { backgroundColor: null, scale: 2, useCORS: true, logging: false });
+
+          // Restore
+          btn.style.display = prevBtnDisplay;
+          container.style.background = prevBg;
+
+          var link = document.createElement('a');
+          link.download = 'vaultx-flier.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        } catch(e) {
+          console.error('Download failed', e);
+          alert('Unable to generate image. Try a screenshot as a fallback.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+
+

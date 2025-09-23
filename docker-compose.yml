@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  sqlite-web:
+    image: coleifer/sqlite-web:latest
+    command: ["sqlite_web", "-H", "0.0.0.0", "-p", "8081", "/data/data.sqlite"]
+    volumes:
+      - ./:/data
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
