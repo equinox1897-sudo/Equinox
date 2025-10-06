@@ -64,9 +64,17 @@ const ADMIN_KEY = process.env.ADMIN_KEY || '1738';
 const SQLITE_ADMIN_USER = process.env.SQLITE_ADMIN_USER || 'admin';
 const SQLITE_ADMIN_PASS = process.env.SQLITE_ADMIN_PASS || '';
 
-// Init DB
-const dbFile = process.env.DB_FILE || path.join(__dirname, 'data.sqlite');
-const db = new sqlite3.Database(dbFile);
+// Init DB on persistent disk
+// Use DB_FILE env if set, otherwise default to /vault/data.sqlite
+const dbFile = process.env.DB_FILE || path.join('/vault', 'data.sqlite');
+const db = new sqlite3.Database(dbFile, (err) => {
+  if (err) {
+    console.error('Failed to connect to SQLite DB:', err);
+  } else {
+    console.log('Connected to SQLite database at', dbFile);
+  }
+});
+
 
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS users (
