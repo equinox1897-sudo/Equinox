@@ -576,6 +576,47 @@ app.post('/api/stocks/update-percentage', async (req, res) => {
   }
 });
 
+// Get current percentage data
+app.get('/api/percentage/current', async (req, res) => {
+  try {
+    const { uid } = req.query;
+    const hasUid = typeof uid === 'string' && uid.trim().length > 0;
+    
+    console.log('Fetching percentage data for uid:', uid);
+    
+    if (hasUid) {
+      // Get user-specific percentage
+      const result = await db.query(`
+        SELECT percentages FROM user_percentages WHERE uid = $1
+      `, [uid]);
+      
+      if (result.rows.length > 0) {
+        const percentageData = result.rows[0].percentages;
+        console.log('Found user percentage:', percentageData);
+        return res.json({ ok: true, percentage: percentageData });
+      }
+    }
+    
+    // Get global percentage
+    const globalResult = await db.query(`
+      SELECT percentages FROM user_percentages WHERE uid = '__global__'
+    `);
+    
+    if (globalResult.rows.length > 0) {
+      const percentageData = globalResult.rows[0].percentages;
+      console.log('Found global percentage:', percentageData);
+      return res.json({ ok: true, percentage: percentageData });
+    }
+    
+    // No percentage data found
+    console.log('No percentage data found, returning default');
+    res.json({ ok: true, percentage: { value: 0, direction: 'neutral' } });
+  } catch (e) {
+    console.error('Percentage fetch error:', e);
+    res.status(500).json({ error: 'internal_error', detail: String(e?.message || e) });
+  }
+});
+
 // Update percentage bubble (admin-only)
 app.post('/api/percentage/update', async (req, res) => {
   try {
