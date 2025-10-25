@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAnalytics, logEvent } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyD1cH55nyjNRcpXnWCgEBHKsutYTnLbQt8",
+      authDomain: "equinox-b1604.firebaseapp.com",
+      projectId: "equinox-b1604",
+      storageBucket: "equinox-b1604.firebasestorage.app",
+      messagingSenderId: "752173466191",
+      appId: "1:752173466191:web:6da85b3e6c0aa86527e03a",
+      measurementId: "G-75PH8JT8R5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    window.firebaseApp = app;
+    window.firebaseAnalytics = analytics;
+  </script>
+  
+  <style>
+    body{margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial; background:#0b0f15; color:#e6e9ef; display:grid; place-items:center; min-height:100vh; padding:16px}
+    .card{width:100%; max-width:480px; background:#111827; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:clamp(16px, 3vw, 20px)}
+    .brand{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+    .brand img{width:22px; height:22px; border-radius:6px}
+    .brand .name{font-weight:800; letter-spacing:.2px}
+    .title{font-weight:800; margin-bottom:10px; font-size:clamp(20px, 4.5vw, 28px)}
+    .input{width:100%; box-sizing:border-box; padding:14px 16px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.03); color:#e6e9ef; margin:10px 0; font-size:16px}
+    .btn{width:100%; padding:14px 16px; border-radius:10px; border:0; background:#2f67ff; color:white; font-weight:700; margin-top:12px; cursor:pointer}
+    .muted{color:#93a0b3; margin-top:10px}
+    a{color:#9bbcff; text-decoration:none}
+    .error{color:#ef4444; margin-top:8px}
+    @media (max-width: 480px){
+      body{padding:12px}
+      .card{padding:16px; border-radius:10px}
+      .btn{font-size:16px}
+    }
+    @media (max-height: 580px){
+      body{place-items:start}
+      .card{margin-top:24px; margin-bottom:24px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand"><img src="favicon.svg" alt="Vault X"/><div class="name">Vault X</div></div>
+    <div class="title">Log in</div>
+    <input id="email" class="input" type="email" placeholder="Email" />
+    <input id="password" class="input" type="password" placeholder="Password" />
+    <button id="loginBtn" class="btn" type="button">Log In</button>
+    <div id="msg" class="muted"></div>
+    <div class="muted">No account? <a href="signup.html">Sign up</a></div>
+  </div>
+  <script>
+
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const email = (document.getElementById('email').value||'').trim();
+      const password = (document.getElementById('password').value||'').trim();
+      const msg = document.getElementById('msg');
+      
+      // Clear previous messages
+      msg.textContent = '';
+      msg.className = 'muted';
+      
+      if (!email || !password) { 
+        msg.textContent = 'Enter email and password.'; 
+        msg.className = 'error';
+        return; 
+      }
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          msg.textContent = result.error === 'invalid_credentials' ? 
+            'Invalid email or password.' : 
+            (result.error || 'Login failed. Please try again.');
+          msg.className = 'error';
+          return;
+        }
+
+        //next
+        
+        // Save user data to localStorage
+        const profile = result.profile;
+        localStorage.setItem('we_uid', profile.uid);
+        localStorage.setItem('we_wallet_name', profile.name || '');
+        localStorage.setItem('we_wallet_email', profile.email || '');
+        
+        // Track login event in Firebase Analytics
+        if (window.firebaseAnalytics) {
+          import('https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js')
+            .then(({ logEvent }) => {
+              logEvent(window.firebaseAnalytics, 'login', { method: 'email' });
+            });
+        }
+        
+        // Show success message
+        msg.textContent = 'Login successful! Redirecting...';
+        msg.className = 'muted';
+        
+        // Redirect to home page
+        setTimeout(() => {
+          window.location.href = 'home.html';
+        }, 1000);
+        
+      } catch (error) {
+        msg.textContent = 'Network error. Please try again.';
+        msg.className = 'error';
+      }
+    });
+  </script>
+</body>
+</html>
+
+

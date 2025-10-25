@@ -1,0 +1,30 @@
+<!-- Firebase SDK Initialization -->
+<!-- Add this script block to the <head> section of your HTML pages that need Firebase -->
+
+<!-- Firebase App (Core) -->
+<script type="module">
+  // Import Firebase SDKs
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+  import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
+  
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD1cH55nyjNRcpXnWCgEBHKsutYTnLbQt8",
+    authDomain: "equinox-b1604.firebaseapp.com",
+    projectId: "equinox-b1604",
+    storageBucket: "equinox-b1604.firebasestorage.app",
+    messagingSenderId: "752173466191",
+    appId: "1:752173466191:web:6da85b3e6c0aa86527e03a",
+    measurementId: "G-75PH8JT8R5"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  
+  // Make Firebase available globally
+  window.firebaseApp = app;
+  window.firebaseAnalytics = analytics;
+  
+  console.log('Firebase initialized successfully');
+</script>

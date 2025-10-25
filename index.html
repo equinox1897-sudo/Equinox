@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vault X — Welcome</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #06090f;
+      --accent: #6d5efc;
+      --accent2: #5a7bff;
+      --text: #e6e9ef;
+      --muted: #97a2b6;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
+      color: var(--text);
+      background: radial-gradient(100% 100% at 0% 0%, rgba(109,94,252,0.18) 0%, rgba(109,94,252,0) 40%),
+                  linear-gradient(180deg, #0a0f17, #06090f 70%);
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .wrap { position: relative; min-height: 100vh; display: grid; place-items: center; padding: clamp(16px, 4vw, 24px); }
+    canvas#fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .35; }
+    .ring {
+      position: absolute; inset: -10% -10% auto -10%; height: 80vh; filter: blur(36px); opacity: .35;
+      background: conic-gradient(from 0deg, rgba(109,94,252,0.35), rgba(90,123,255,0.35), rgba(109,94,252,0.35));
+      border-radius: 50%; animation: spin 18s linear infinite;
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .card {
+      position: relative; z-index: 1; width: 100%; max-width: 960px; border-radius: 16px; padding: clamp(18px, 3.2vw, 28px);
+      background: linear-gradient(180deg, rgba(17,24,39,.7), rgba(11,17,27,.7));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 24px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,0.05);
+      text-align: center;
+    }
+    .logo {
+      display: inline-grid; place-items: center; width: clamp(48px, 10vw, 96px); height: clamp(48px, 10vw, 96px); border-radius: 16px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      margin: 0 auto 12px; color: white;
+      animation: bob 2.6s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .title { font-size: clamp(28px, 4.8vw, 48px); font-weight: 800; letter-spacing: 0.3px; }
+    .subtitle { margin-top: 8px; color: var(--muted); font-size: clamp(14px, 2.6vw, 18px); min-height: 24px; }
+    .rotate { display: inline-block; min-width: 9ch; color: #b5c0d4; }
+    .meter { margin: 24px auto 12px; height: 12px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; max-width: min(560px, 92vw); }
+    .bar {
+      width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+      animation: load 15000ms ease-out forwards;
+    }
+    @keyframes load {
+      0% { width: 0%; }
+      30% { width: 38%; }
+      55% { width: 62%; }
+      80% { width: 86%; }
+      100% { width: 100%; }
+    }
+    .features { display: flex; gap: clamp(6px, 1.2vw, 10px); justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+    .badge { padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-weight: 600; font-size: clamp(11px, 2.4vw, 12px); opacity: 0; transform: translateY(8px); animation: in .7s ease forwards; }
+    .badge:nth-child(1){ animation-delay: .15s; }
+    .badge:nth-child(2){ animation-delay: .25s; }
+    .badge:nth-child(3){ animation-delay: .35s; }
+    .badge:nth-child(4){ animation-delay: .45s; }
+    @keyframes in { to { opacity: 1; transform: translateY(0); } }
+    .cta {
+      margin-top: 18px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 12px;
+      color: white; text-decoration: none; font-weight: 700; cursor: pointer; border: 1px solid transparent;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .ghost { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); }
+    .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .muted { color: var(--muted); margin-top: 8px; font-size: 12px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ring, .logo, .bar { animation: none !important; }
+    }
+    @media (max-width: 560px){
+      .wrap{padding: 16px}
+      .ring{height: 60vh; opacity:.28}
+      .badge{font-size: 11px; padding: 7px 10px}
+      .cta{width: 100%; justify-content: center}
+      .row{gap: 8px}
+    }
+    @media (max-height: 560px){
+      .wrap{place-items:start}
+      .card{margin-top: 24px; margin-bottom: 24px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <canvas id="fx"></canvas>
+    <div class="ring"></div>
+    <div class="card">
+      <div class="logo">
+        <img src="favicon.svg" alt="Vault X logo" width="56" height="56" />
+      </div>
+      <div class="title">Welcome to Vault X</div>
+      <div class="subtitle">Smarter growth. Real results. <span class="rotate" id="words">Secure</span>.</div>
+      <div class="features">
+        <div class="badge">Bank‑grade security</div>
+        <div class="badge">Instant withdrawals</div>
+        <div class="badge">24/7 support</div>
+      </div>
+      <div class="meter"><div class="bar" id="bar"></div></div>
+      <div class="row">
+        <a class="cta" href="login.html" id="continueBtn">Continue</a>
+        <button class="cta ghost" id="skipBtn" type="button">Skip intro</button>
+      </div>
+      <div class="muted">You will be redirected shortly…</div>
+    </div>
+  </div>
+  <script>
+    // Auto-redirect after animation completes or after 4.2s
+    const go = () => { window.location.replace('login.html'); };
+    const timer = setTimeout(go, 15000);
+    document.getElementById('skipBtn').addEventListener('click', () => { clearTimeout(timer); go(); });
+    document.getElementById('continueBtn').addEventListener('click', () => { clearTimeout(timer); });
+
+    // Keyboard shortcuts: Enter to continue, Esc to skip
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { clearTimeout(timer); go(); }
+      if (e.key === 'Escape') { clearTimeout(timer); go(); }
+    });
+
+    // Rotating words in subtitle
+    (function rotateWords(){
+      const el = document.getElementById('words');
+      const words = ['Secure', 'Fast', 'Reliable', 'Global'];
+      let i = 0;
+      setInterval(() => {
+        i = (i + 1) % words.length;
+        if (!el) return;
+        el.style.opacity = '0';
+        setTimeout(() => { el.textContent = words[i]; el.style.opacity = '1'; }, 160);
+      }, 1200);
+    })();
+
+    // Subtle particle background
+    (function particles(){
+      const c = document.getElementById('fx'); if (!c) return; const ctx = c.getContext('2d');
+      let w, h, dpr;
+      const px = () => {
+        dpr = Math.min(2, window.devicePixelRatio || 1);
+        w = c.clientWidth; h = c.clientHeight;
+        c.width = Math.floor(w * dpr); c.height = Math.floor(h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      px();
+      window.addEventListener('resize', px);
+      const N = 36;
+      const pts = Array.from({length:N}).map(() => ({
+        x: Math.random()*w, y: Math.random()*h,
+        r: Math.random()*2 + 0.6,
+        vx: (Math.random()-0.5)*0.2, vy: (Math.random()-0.5)*0.2,
+        a: Math.random()*0.35 + 0.25
+      }));
+      function step(){
+        ctx.clearRect(0,0,w,h);
+        for (const p of pts) {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < -10) p.x = w+10; if (p.x > w+10) p.x = -10;
+          if (p.y < -10) p.y = h+10; if (p.y > h+10) p.y = -10;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(141, 156, 185, ${p.a})`;
+          ctx.fill();
+        }
+        requestAnimationFrame(step);
+      }
+      step();
+    })();
+  </script>
+</body>
+</html>
+
+

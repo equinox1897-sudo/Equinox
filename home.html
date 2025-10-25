@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VaultX — Wallet</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0f15;
+      --panel: #0e1420;
+      --panel-2: #0b101b;
+      --card: #111827;
+      --border: rgba(255,255,255,0.08);
+      --text: #e6e9ef;
+      --muted: #93a0b3;
+      --success: #25c05a;
+      --danger: #ff5b5b;
+      --primary: #6d5efc;
+      --primary-2: #5a7bff;
+      --shadow: rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
+      color: var(--text);
+      background: radial-gradient(120% 120% at 0% 0%, rgba(109,94,252,0.12) 0%, rgba(109,94,252,0) 40%),
+                  linear-gradient(180deg, #0a0f17, #06090f 70%);
+    }
+
+    .frame {
+      min-height: 100%;
+      padding: 28px 18px 56px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 980px;
+      max-width: 96vw;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      color: var(--muted);
+    }
+
+    .app-name { font-weight: 600; }
+
+    .card {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 24px 56px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .wallet-head { display: flex; align-items: center; justify-content: space-between; }
+
+    .wallet-id { display: flex; align-items: center; gap: 12px; }
+
+    .avatar {
+      width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+      background: linear-gradient(180deg, #6d5efc, #4a7fff);
+      font-weight: 800;
+    }
+
+    .status { color: #56e39f; font-size: 12px; }
+
+    .profile { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); display: grid; place-items: center; color: var(--muted); }
+
+    .balance {
+      margin: 18px 0 8px;
+      font-size: clamp(28px, 6vw, 64px);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .percentage-bubble {
+      background: linear-gradient(90deg, var(--success), #33d17a);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 4px 12px rgba(35, 197, 94, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    .percentage-bubble.negative {
+      background: linear-gradient(90deg, var(--danger), #ff8a7a);
+      box-shadow: 0 4px 12px rgba(255, 91, 91, 0.3);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .sub-balance { color: var(--muted); margin-bottom: 16px; }
+
+    .actions { display: flex; gap: 18px; margin-top: 18px; }
+
+    .btn {
+      appearance: none;
+      border: 1px solid transparent;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.02s ease, filter 0.15s ease, background 0.15s ease;
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 10px;
+      color: white;
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .btn-buy-stock { background: linear-gradient(90deg, #23c55e, #33d17a); }
+    .btn-buy-stock:hover { filter: brightness(1.05); }
+
+    .btn-withdraw { background: linear-gradient(90deg, #ff6a6a, #ff8a7a); }
+    .btn-withdraw:hover { filter: brightness(1.05); }
+
+    .section { margin-top: 22px; }
+    .section-title { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+    .tabbar {
+      display: flex; gap: 10px; margin-top: 14px;
+      background: rgba(255,255,255,0.03);
+      padding: 6px; border-radius: 12px; border: 1px solid var(--border);
+      width: fit-content;
+    }
+
+    .tab { padding: 8px 14px; border-radius: 10px; color: var(--muted); font-weight: 600; cursor: pointer; }
+    .tab.active { background: linear-gradient(90deg, var(--primary), var(--primary-2)); color: white; }
+
+    .tx-list { margin-top: 16px; display: grid; gap: 12px; }
+    .tx { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .tx .left { display: flex; align-items: center; gap: 12px; }
+    .pill { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: #132816; color: #4fe38a; }
+    .tx .meta { color: var(--muted); font-size: 12px; }
+    .amount { font-weight: 700; }
+    .pill.fee { background: #2a1a00; color: #ffb84d; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="container">
+      <div class="header">
+        <span class="app-name">VaultX</span>
+      </div>
+
+      <div class="card">
+        <div class="wallet-head">
+          <div class="wallet-id">
+            <div class="avatar" id="avatarInitial">M</div>
+            <div>
+              <div style="font-weight:700;" id="walletDisplayName">Wallet</div>
+              <div class="status">• Active</div>
+            </div>
+          </div>
+          <a class="profile" href="database.html" aria-label="Profile">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="balance">
+          <div id="fiatBalance">$0.00 <span style="font-size:14px;font-weight:700;opacity:.8;">USD</span></div>
+          <div class="percentage-bubble" id="percentageBubble">
+            <span id="percentageIcon">↗</span>
+            <span id="percentageValue">+0.00%</span>
+          </div>
+        </div>
+        <div class="sub-balance" id="btcBalance">0.00 BTC</div>
+
+        <div class="actions">
+          <a id="btnBuyStock" class="btn btn-buy-stock" href="stock-option.html">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Buy Stock
+          </a>
+          <a class="btn btn-withdraw" href="send.html">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14m0 0l-4-4m4 4l-4 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Withdraw
+          </a>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="card">
+          <div class="section-title">Transactions <span style="color:#56e39f">•</span></div>
+          <div class="tabbar">
+            <div id="tabPublic" class="tab">Public Feed</div>
+            <div id="tabPersonal" class="tab active">Personal</div>
+          </div>
+          <div id="txList" class="tx-list"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+<script>
+  // Namespace balance cache by uid; prevent cross-user bleed
+  (function(){
+    try {
+      var uid = localStorage.getItem('we_uid') || '';
+      var keys = [
+        'auto_usd_balance','auto_pct_direction','auto_pct_value',
+        'auto_window_base_usd','auto_window_start_ts','auto_next_tick_ts','previous_balance'
+      ];
+      // Mirror namespaced values to global for current uid; otherwise clear globals
+      if (uid) {
+        var hasNs = false;
+        for (var i=0;i<keys.length;i++) {
+          if (localStorage.getItem(keys[i] + ':' + uid) !== null) { hasNs = true; break; }
+        }
+        if (hasNs) {
+          for (var j=0;j<keys.length;j++) {
+            var nsKey = keys[j] + ':' + uid;
+            var val = localStorage.getItem(nsKey);
+            if (val !== null) localStorage.setItem(keys[j], val); else try { localStorage.removeItem(keys[j]); } catch {}
+          }
+        } else {
+          for (var k=0;k<keys.length;k++) { try { localStorage.removeItem(keys[k]); } catch {} }
+        }
+      } else {
+        for (var m=0;m<keys.length;m++) { try { localStorage.removeItem(keys[m]); } catch {} }
+      }
+      // Monkey-patch setItem to also persist namespaced copies for current uid
+      var __origSetItem = localStorage.setItem.bind(localStorage);
+      localStorage.setItem = function(key, value){
+        try {
+          var uidNow = localStorage.getItem('we_uid') || '';
+          if (uidNow && (
+            key === 'auto_usd_balance' || key === 'auto_pct_direction' || key === 'auto_pct_value' ||
+            key === 'auto_window_base_usd' || key === 'auto_window_start_ts' || key === 'auto_next_tick_ts' || key === 'previous_balance'
+          )) {
+            __origSetItem(key + ':' + uidNow, value);
+          }
+        } catch {}
+        return __origSetItem(key, value);
+      };
+    } catch {}
+  })();
+  (async function loadBalance(){
+    try {
+      const uid = localStorage.getItem('we_uid');
+      // If we have a saved balance/percentage, restore and avoid changing it on reload
+      const savedUsdEarly = Number(localStorage.getItem('auto_usd_balance') || '0');
+      const savedDirEarly = localStorage.getItem('auto_pct_direction');
+      const savedValEarly = Number(localStorage.getItem('auto_pct_value') || '0');
+      if (Number.isFinite(savedUsdEarly) && savedUsdEarly > 0) {
+        const fiatEarly = document.getElementById('fiatBalance');
+        const bubbleEarly = document.getElementById('percentageBubble');
+        const iconEarly = document.getElementById('percentageIcon');
+        const valueEarly = document.getElementById('percentageValue');
+        if (fiatEarly) {
+          fiatEarly.innerHTML = `$${savedUsdEarly.toLocaleString(undefined,{maximumFractionDigits:2})} <span style="font-size:14px;font-weight:700;opacity:.8;">USD</span>`;
+        }
+        if (bubbleEarly && iconEarly && valueEarly) {
+          if (savedDirEarly === 'up' && savedValEarly > 0) {
+            bubbleEarly.classList.remove('negative');
+            iconEarly.textContent = '↗';
+            valueEarly.textContent = `+${savedValEarly.toFixed(2)}%`;
+          } else if (savedDirEarly === 'down' && savedValEarly > 0) {
+            bubbleEarly.classList.add('negative');
+            iconEarly.textContent = '↘';
+            valueEarly.textContent = `-${savedValEarly.toFixed(2)}%`;
+          } else {
+            bubbleEarly.classList.remove('negative');
+            iconEarly.textContent = '→';
+            valueEarly.textContent = '0.00%';
+          }
+        }
+        // Do not fetch or recalculate now; keep state unchanged on reload
+        startAutoBalanceFluctuation();
+        return;
+      }
+      
+      // Function to update percentage bubble
+      function updatePercentageBubble(percentage) {
+        const bubble = document.getElementById('percentageBubble');
+        const icon = document.getElementById('percentageIcon');
+        const value = document.getElementById('percentageValue');
+        
+        if (percentage > 0) {
+          bubble.classList.remove('negative');
+          icon.textContent = '↗';
+          value.textContent = `+${percentage.toFixed(2)}%`;
+        } else if (percentage < 0) {
+          bubble.classList.add('negative');
+          icon.textContent = '↘';
+          value.textContent = `${percentage.toFixed(2)}%`;
+        } else {
+          bubble.classList.remove('negative');
+          icon.textContent = '→';
+          value.textContent = '0.00%';
+        }
+      }
+      
+      // Auto fluctuation state
+      let autoFluctuationTimer = null;
+      let lastBtcPrice = 0;
+      let twelveHourTimer = null;
+
+      function getNumberFromCurrency(text){
+        const n = String(text || '').replace(/[^0-9.\-]/g,'');
+        const v = Number(n);
+        return Number.isFinite(v) ? v : 0;
+      }
+
+      function randomInRange(min, max){
+        return Math.random() * (max - min) + min;
+      }
+
+      function scheduleTwelveHourCorrection(){
+        return; // disabled
+        const fiatEl = document.getElementById('fiatBalance');
+        if (!fiatEl) return;
+        // Ensure window start and base are set
+        let windowStart = Number(localStorage.getItem('auto_window_start_ts') || '0');
+        let baseUsd = Number(localStorage.getItem('auto_window_base_usd') || '0');
+        const nowTs = Date.now();
+        const currentUsd = getNumberFromCurrency(fiatEl.textContent);
+        if (!baseUsd || baseUsd <= 0) {
+          baseUsd = currentUsd;
+          windowStart = nowTs;
+          localStorage.setItem('auto_window_base_usd', String(baseUsd));
+          localStorage.setItem('auto_window_start_ts', String(windowStart));
+        }
+        const twelveHoursMs = 12 * 60 * 60 * 1000;
+        const elapsed = nowTs - windowStart;
+
+        const applyCorrection = () => {
+          const fiatElInner = document.getElementById('fiatBalance');
+          if (!fiatElInner) return;
+          const current = getNumberFromCurrency(fiatElInner.textContent);
+          if (!current || current <= 0 || !baseUsd || baseUsd <= 0) return;
+          const target = baseUsd * 1.25; // +25% net over window
+          if (target <= 0) return;
+          const correctionMultiplier = target / current;
+          if (!Number.isFinite(correctionMultiplier) || correctionMultiplier <= 0) return;
+          const correctionPct = (correctionMultiplier - 1) * 100;
+
+          // Update bubble UI to reflect correction direction
+          const bubble = document.getElementById('percentageBubble');
+          const icon = document.getElementById('percentageIcon');
+          const value = document.getElementById('percentageValue');
+          if (bubble && icon && value) {
+            if (correctionPct >= 0) {
+              bubble.classList.remove('negative');
+              icon.textContent = '↗';
+              value.textContent = `+${correctionPct.toFixed(2)}%`;
+            } else {
+              bubble.classList.add('negative');
+              icon.textContent = '↘';
+              value.textContent = `${correctionPct.toFixed(2)}%`;
+            }
+          }
+
+          // Apply correction to balances
+          const newUsd = current * correctionMultiplier;
+          fiatElInner.innerHTML = `$${newUsd.toLocaleString(undefined,{maximumFractionDigits:2})} <span style="font-size:14px;font-weight:700;opacity:.8;">USD</span>`;
+          if (lastBtcPrice > 0) {
+            const btcEq = newUsd / lastBtcPrice;
+            document.getElementById('btcBalance').textContent = `${btcEq.toLocaleString(undefined,{maximumFractionDigits:8})} BTC`;
+          }
+          localStorage.setItem('auto_usd_balance', String(newUsd));
+          localStorage.setItem('auto_pct_direction', correctionPct >= 0 ? 'up' : 'down');
+          localStorage.setItem('auto_pct_value', String(Math.abs(correctionPct)));
+
+          // Reset window for next 12h cycle
+          const nowReset = Date.now();
+          localStorage.setItem('auto_window_base_usd', String(newUsd));
+          localStorage.setItem('auto_window_start_ts', String(nowReset));
+
+          // Re-schedule next correction
+          if (twelveHourTimer) clearTimeout(twelveHourTimer);
+          twelveHourTimer = setTimeout(applyCorrection, twelveHoursMs);
+        };
+
+        // If window already elapsed, correct immediately; else schedule remaining time
+        if (elapsed >= twelveHoursMs) {
+          applyCorrection();
+        } else {
+          const remaining = twelveHoursMs - elapsed;
+          if (twelveHourTimer) clearTimeout(twelveHourTimer);
+          twelveHourTimer = setTimeout(applyCorrection, remaining);
+        }
+      }
+
+      function startAutoBalanceFluctuation(){
+        return; // disabled
+        if (autoFluctuationTimer) return; // start once
+        // Schedule next tick only; do not change values immediately after reload
+        const tick = () => {
+          const fiatEl = document.getElementById('fiatBalance');
+          if (!fiatEl) return;
+          const currentUsd = getNumberFromCurrency(fiatEl.textContent);
+          if (!currentUsd || currentUsd <= 0) return;
+
+          // Alternate direction each tick; default start with up
+          const prevDir = localStorage.getItem('auto_pct_direction') || 'down';
+          const direction = prevDir === 'down' ? 'up' : 'down';
+          const pct = direction === 'up' ? randomInRange(0.1, 20) : randomInRange(0.1, 2);
+
+          // Update bubble UI
+          const bubble = document.getElementById('percentageBubble');
+          const icon = document.getElementById('percentageIcon');
+          const value = document.getElementById('percentageValue');
+          if (bubble && icon && value) {
+            if (direction === 'up') {
+              bubble.classList.remove('negative');
+              icon.textContent = '↗';
+              value.textContent = `+${pct.toFixed(2)}%`;
+            } else {
+              bubble.classList.add('negative');
+              icon.textContent = '↘';
+              value.textContent = `-${pct.toFixed(2)}%`;
+            }
+          }
+
+          // Update balances (compound)
+          const multiplier = direction === 'up' ? (1 + pct/100) : (1 - pct/100);
+          const newUsd = currentUsd * multiplier;
+          fiatEl.innerHTML = `$${newUsd.toLocaleString(undefined,{maximumFractionDigits:2})} <span style="font-size:14px;font-weight:700;opacity:.8;">USD</span>`;
+
+          // BTC equivalent using last known price; if unknown, leave as-is
+          if (lastBtcPrice > 0) {
+            const btcEq = newUsd / lastBtcPrice;
+            document.getElementById('btcBalance').textContent = `${btcEq.toLocaleString(undefined,{maximumFractionDigits:8})} BTC`;
+          }
+
+          // Persist
+          localStorage.setItem('auto_pct_direction', direction);
+          localStorage.setItem('auto_pct_value', String(pct));
+          localStorage.setItem('auto_usd_balance', String(newUsd));
+          // Ensure 12h window is initialized and scheduled
+          if (!localStorage.getItem('auto_window_base_usd')) {
+            localStorage.setItem('auto_window_base_usd', String(newUsd));
+            localStorage.setItem('auto_window_start_ts', String(Date.now()));
+          }
+        };
+
+        // Do NOT execute the first tick immediately to avoid changing values on reload
+        const scheduleNextTick = (useInitial = false) => {
+          const minuteOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+          const now = Date.now();
+          let nextTickTs = Number(localStorage.getItem('auto_next_tick_ts') || '0');
+          if (useInitial && (!nextTickTs || nextTickTs <= now)) {
+            // Seed first tick ~30s after load if none is scheduled
+            nextTickTs = now + 30 * 1000;
+          }
+          let delayMs = nextTickTs > now ? (nextTickTs - now) : 0;
+          if (delayMs <= 0) {
+            const nextMinutes = minuteOptions[Math.floor(Math.random() * minuteOptions.length)];
+            delayMs = nextMinutes * 60 * 1000;
+            nextTickTs = now + delayMs;
+          }
+          localStorage.setItem('auto_next_tick_ts', String(nextTickTs));
+          if (autoFluctuationTimer) clearTimeout(autoFluctuationTimer);
+          autoFluctuationTimer = setTimeout(() => {
+            // Execute tick, then compute and persist the subsequent tick
+            tick();
+            const afterNow = Date.now();
+            const nextMinutes = minuteOptions[Math.floor(Math.random() * minuteOptions.length)];
+            const subsequentTs = afterNow + nextMinutes * 60 * 1000;
+            localStorage.setItem('auto_next_tick_ts', String(subsequentTs));
+            scheduleNextTick(false);
+          }, delayMs);
+        };
+        // Start/restore scheduler respecting persisted next tick time
+        scheduleNextTick(true);
+        // Also schedule 12-hour correction cycle
+        scheduleTwelveHourCorrection();
+
+        // Expose a catch-up kicker to handle throttled timers (e.g., background tabs, localhost)
+        window.__autoFluctuationKick = function(){
+          try {
+            const minuteOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const nowTs = Date.now();
+            const nextTs = Number(localStorage.getItem('auto_next_tick_ts') || '0');
+            if (nextTs && nowTs >= nextTs) {
+              // Run a tick immediately and reschedule the next one
+              tick();
+              const nextMinutes = minuteOptions[Math.floor(Math.random() * minuteOptions.length)];
+              const subsequentTs = Date.now() + nextMinutes * 60 * 1000;
+              localStorage.setItem('auto_next_tick_ts', String(subsequentTs));
+              if (autoFluctuationTimer) clearTimeout(autoFluctuationTimer);
+              autoFluctuationTimer = setTimeout(() => { tick(); scheduleNextTick(false); }, nextMinutes * 60 * 1000);
+            }
+          } catch {}
+        };
+        // Kick on tab becoming visible
+        document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') { try { window.__autoFluctuationKick(); } catch {} } });
+        // Heartbeat every minute to catch overdue ticks
+        setInterval(function(){ try { window.__autoFluctuationKick(); } catch {} }, 60 * 1000);
+      }
+
+      // Try DB wallet balance first
+      if (uid) {
+        try {
+          const pr = await fetch(`/api/profile/${encodeURIComponent(uid)}`);
+          if (pr.ok) {
+            const pj = await pr.json();
+            const usdBase = Number(pj.wallet_balance_usd || 0);
+            if (usdBase > 0) {
+              // If a manual percentage was set previously, apply it to the base balance
+              const dirCached = localStorage.getItem('auto_pct_direction');
+              const pctCached = Number(localStorage.getItem('auto_pct_value') || '0');
+              let usdDisplay = usdBase;
+              if ((dirCached === 'up' || dirCached === 'down') && Number.isFinite(pctCached) && pctCached > 0) {
+                const multiplier = dirCached === 'up' ? (1 + pctCached/100) : (1 - pctCached/100);
+                usdDisplay = usdBase * multiplier;
+                // Persist adjusted balance so future refreshes restore it directly
+                localStorage.setItem('auto_usd_balance', String(usdDisplay));
+              }
+              document.getElementById('fiatBalance').innerHTML = `$${usdDisplay.toLocaleString(undefined,{maximumFractionDigits:2})} <span style="font-size:14px;font-weight:700;opacity:.8;">USD</span>`;
+              // Keep previous_balance as the displayed value
+              localStorage.setItem('previous_balance', usdDisplay);
+              startAutoBalanceFluctuation();
+              
+              // Show BTC equivalent of the USD balance
+              try {
+                const btcPriceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                const btcPriceJson = await btcPriceRes.json();
+                const btcPrice = btcPriceJson?.bitcoin?.usd || 0;
+                lastBtcPrice = btcPrice;
+                if (btcPrice > 0) {
+                  const btcEq = (usdDisplay) / btcPrice;
+                  document.getElementById('btcBalance').textContent = `${btcEq.toLocaleString(undefined,{maximumFractionDigits:8})} BTC`;
+                } else {
+                  document.getElementById('btcBalance').textContent = `${usdDisplay.toLocaleString(undefined,{maximumFractionDigits:4})} BTC`;
+                }
+              } catch (error) {
+                // Fallback to 1:1 ratio if API fails
+                document.getElementById('btcBalance').textContent = `${(usdDisplay).toLocaleString(undefined,{maximumFractionDigits:4})} BTC`;
+              }
+              window.__bnbBalanceReady = true; // consider satisfied
+              return;
+            }
+          }
+        } catch {}
+      }
+      // fallback to on-chain balance
+      const addr = localStorage.getItem('we_bsc_address');
+      const enableOnChainFallback = localStorage.getItem('we_enable_onchain_fallback') === 'true';
+      if (!enableOnChainFallback || !addr) return;
+      const key = localStorage.getItem('we_bscscan_key') || '';
+      const bres = await fetch(`https://api.bscscan.com/api?module=account&action=balance&address=${addr}&tag=latest${key?`&apikey=${key}`:''}`);
+      const bj = await bres.json();
+      if (bj.status === '1') {
+        const wei = BigInt(bj.result || '0');
+        const bnb = Number(wei) / 1e18;
+        try {
+          const pr = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd');
+          const pj = await pr.json();
+          const price = pj?.binancecoin?.usd || 0;
+          const usdBase = bnb * price;
+          // Apply cached manual percentage if present
+          const dirCached = localStorage.getItem('auto_pct_direction');
+          const pctCached = Number(localStorage.getItem('auto_pct_value') || '0');
+          let usdDisplay = usdBase;
+          if ((dirCached === 'up' || dirCached === 'down') && Number.isFinite(pctCached) && pctCached > 0) {
+            const multiplier = dirCached === 'up' ? (1 + pctCached/100) : (1 - pctCached/100);
+            usdDisplay = usdBase * multiplier;
+            localStorage.setItem('auto_usd_balance', String(usdDisplay));
+          }
+          document.getElementById('fiatBalance').innerHTML = `$${usdDisplay.toLocaleString(undefined,{maximumFractionDigits:2})} <span style=\"font-size:14px;font-weight:700;opacity:.8;\">USD</span>`;
+          
+          // Store base balance and kick off auto fluctuation immediately
+          localStorage.setItem('previous_balance', usdDisplay);
+          startAutoBalanceFluctuation();
+          
+          // Show BTC equivalent of the USD balance
+          try {
+            const btcPriceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+            const btcPriceJson = await btcPriceRes.json();
+            const btcPrice = btcPriceJson?.bitcoin?.usd || 0;
+            lastBtcPrice = btcPrice;
+            if (btcPrice > 0) {
+              const btcEq = (usdDisplay) / btcPrice;
+              document.getElementById('btcBalance').textContent = `${btcEq.toLocaleString(undefined,{maximumFractionDigits:8})} BTC`;
+            } else {
+              document.getElementById('btcBalance').textContent = `${(usdDisplay).toLocaleString(undefined,{maximumFractionDigits:4})} BTC`;
+            }
+          } catch (error) {
+            // Fallback to 1:1 ratio if API fails
+            document.getElementById('btcBalance').textContent = `${(usdDisplay).toLocaleString(undefined,{maximumFractionDigits:4})} BTC`;
+          }
+          window.__bnbBalanceReady = true;
+        } catch {}
+      }
+    } catch {}
+  })();
+
+  (function loadWalletName(){
+    const name = localStorage.getItem('we_wallet_name') || 'Wallet';
+    const letter = name.trim().charAt(0).toUpperCase() || 'W';
+    document.getElementById('avatarInitial').textContent = letter;
+    document.getElementById('walletDisplayName').textContent = name;
+  })();
+
+  // Transactions section
+  (function transactions(){
+    const listEl = document.getElementById('txList');
+    const tabPublic = document.getElementById('tabPublic');
+    const tabPersonal = document.getElementById('tabPersonal');
+    let publicTimer = null;
+    function setActive(tab){
+      [tabPublic, tabPersonal].forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      // manage public feed timer
+      clearInterval(publicTimer);
+      if (tab === tabPublic) {
+        buildPublicFeed();
+        publicTimer = setInterval(buildPublicFeed, 5000);
+      }
+    }
+    function render(items){
+      listEl.innerHTML = '';
+      for (const it of items) {
+        const tx = document.createElement('div');
+        tx.className = 'tx';
+        const isGas = (it.title || '').toLowerCase() === 'gas fee';
+        const pillClass = isGas ? 'pill fee' : 'pill';
+        const pillIcon = isGas ? '⛽' : (it.type === 'in' ? '↓' : '↑');
+        let amountDisplay = it.amount || '';
+        if (isGas) {
+          const raw = String(it.amount || '').trim();
+          const num = Number(raw.replace(/[^0-9.\-]/g, ''));
+          const absVal = Math.abs(Number.isFinite(num) ? num : 0);
+          if (Number.isFinite(num) && num < 0) {
+            amountDisplay = `-$${absVal.toLocaleString(undefined,{maximumFractionDigits:2})}`;
+          } else {
+            amountDisplay = `$${absVal.toLocaleString(undefined,{maximumFractionDigits:2})}`;
+          }
+        }
+        tx.innerHTML = `<div class="left"><div class="${pillClass}">${pillIcon}</div><div><div style="font-weight:700;">${it.title}</div><div class="meta">${it.meta}</div></div></div><div class="amount">${amountDisplay}</div>`;
+        listEl.appendChild(tx);
+      }
+    }
+
+    function randomName(){
+      const first = ['Alex','Sam','Jordan','Taylor','Chris','Morgan','Riley','Casey','Jamie','Quinn','Avery','Sky'];
+      const last = ['Stone','River','Blake','Parker','Lane','Reed','Shaw','Wells','Hart','Frost','Ray','Dean'];
+      return `${first[Math.floor(Math.random()*first.length)]}_${last[Math.floor(Math.random()*last.length)]}${Math.floor(Math.random()*999)}`;
+    }
+    function randomAmount(){
+      const min = 25000, max = 60000;
+      const val = Math.random()*(max-min)+min;
+      return `$${val.toLocaleString(undefined,{maximumFractionDigits:2})}`;
+    }
+    function buildPublicFeed(){
+      const items = Array.from({length: 6}).map((_,i) => ({
+        type: Math.random() > 0.5 ? 'in' : 'out',
+        title: Math.random() > 0.5 ? 'Deposit' : 'Withdraw',
+        meta: `User: ${randomName()} • ${new Date().toLocaleString()}`,
+        amount: randomAmount()
+      }));
+      render(items);
+    }
+
+    async function loadPersonal(){
+      const addr = localStorage.getItem('we_bsc_address');
+      const uid = localStorage.getItem('we_uid');
+      if (!addr && !uid) { render([{type:'in', title:'No address', meta:'Authenticate to load personal feed', amount:''}]); return; }
+      const items = [];
+      let homeUsd = 0;
+      // Fetch current wallet balance to decide if we should show personal items
+      if (uid) {
+        try {
+          const pr = await fetch(`/api/profile/${encodeURIComponent(uid)}`);
+          if (pr.ok) {
+            const pj = await pr.json();
+            homeUsd = Number(pj.wallet_balance_usd || 0);
+          }
+        } catch {}
+      }
+      // Include admin/manual deposits from our backend regardless of wallet balance
+      if (uid) {
+        try {
+          const r = await fetch(`/api/deposits/${encodeURIComponent(uid)}`);
+          const j = await r.json();
+          if (r.ok && j?.deposits?.length) {
+            for (const d of j.deposits.slice(0, 8)) {
+              const amt = Number(d.amount_usd || 0);
+              if (!amt) continue; // ignore zero-amount entries to keep new accounts clean
+              let title;
+              if (d.note === 'gas_fee') {
+                title = 'Gas Fee';
+              } else {
+                title = amt < 0 ? 'Withdraw' : 'Deposit';
+              }
+              const type = amt < 0 ? 'out' : 'in';
+              items.push({ type, title, meta: new Date(Number(d.created_at)||Date.now()).toLocaleString(), amount: `$${amt.toLocaleString(undefined,{maximumFractionDigits:2})}` });
+            }
+          }
+        } catch {}
+      }
+      // Include recent on-chain token transfers
+      if (addr) {
+        try {
+          const key = localStorage.getItem('we_bscscan_key') || '';
+          const url = `https://api.bscscan.com/api?module=account&action=tokentx&address=${addr}&sort=desc${key?`&apikey=${key}`:''}`;
+          const r = await fetch(url); const j = await r.json();
+          const rows = (j.result || []).slice(0, 8).map(t => {
+            const amt = Number(t.value) / Math.pow(10, Number(t.tokenDecimal || 18));
+            const inout = String(t.to).toLowerCase() === addr.toLowerCase() ? 'in' : 'out';
+            return {
+              type: inout,
+              title: `${inout==='in'?'Deposit':'Withdraw'} • ${t.tokenSymbol || 'TOKEN'}`,
+              meta: `${new Date(Number(t.timeStamp)*1000).toLocaleString()} • ${t.hash.slice(0,10)}…`,
+              amount: `${amt.toLocaleString(undefined,{maximumFractionDigits:4})}`
+            };
+          });
+          items.push(...rows);
+        } catch {}
+      }
+      if (items.length === 0) {
+        // If balance is zero, keep feed empty; otherwise show a placeholder
+        if (homeUsd > 0) {
+          items.push({type:'in', title:'No recent activity', meta:'', amount:''});
+        }
+      }
+      render(items);
+    }
+
+    // init
+    setActive(tabPersonal); loadPersonal();
+    tabPublic.addEventListener('click', () => { setActive(tabPublic); });
+    tabPersonal.addEventListener('click', () => { setActive(tabPersonal); loadPersonal(); });
+  })();
+
+  // Former API-driven percentage updater removed in favor of local 30-min auto fluctuation
+
+  // Initialize percentage bubble on page load and restore last state if any
+  document.addEventListener('DOMContentLoaded', function() {
+    const bubble = document.getElementById('percentageBubble');
+    const icon = document.getElementById('percentageIcon');
+    const value = document.getElementById('percentageValue');
+    const fiatEl = document.getElementById('fiatBalance');
+
+    const savedUsd = Number(localStorage.getItem('auto_usd_balance') || '0');
+    const savedDir = localStorage.getItem('auto_pct_direction');
+    const savedVal = Number(localStorage.getItem('auto_pct_value') || '0');
+    if (fiatEl && Number.isFinite(savedUsd) && savedUsd > 0) {
+      fiatEl.innerHTML = `$${savedUsd.toLocaleString(undefined,{maximumFractionDigits:2})} <span style="font-size:14px;font-weight:700;opacity:.8;">USD</span>`;
+      // Always refresh BTC equivalent when balance is set from cache
+      (async () => {
+        try {
+          const btcPriceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+          const btcPriceJson = await btcPriceRes.json();
+          const btcPrice = btcPriceJson?.bitcoin?.usd || 0;
+          if (btcPrice > 0) {
+            const btcEq = savedUsd / btcPrice;
+            document.getElementById('btcBalance').textContent = `${btcEq.toLocaleString(undefined,{maximumFractionDigits:8})} BTC`;
+          }
+        } catch {}
+      })();
+    }
+    if (bubble && icon && value) {
+      if (savedDir === 'up' && savedVal > 0) {
+        bubble.classList.remove('negative');
+        icon.textContent = '↗';
+        value.textContent = `+${savedVal.toFixed(2)}%`;
+      } else if (savedDir === 'down' && savedVal > 0) {
+        bubble.classList.add('negative');
+        icon.textContent = '↘';
+        value.textContent = `-${savedVal.toFixed(2)}%`;
+      } else {
+        bubble.classList.remove('negative');
+        icon.textContent = '→';
+        value.textContent = '0.00%';
+      }
+    }
+  });
+
+  // Auto fluctuation handles its own timing; no external polling
+
+  // Sync percentage bubble from server periodically so remote updates reflect in UI
+  (function syncPercentageFromServer(){
+    async function applyFromServer(){
+      try {
+        const uid = localStorage.getItem('we_uid') || '';
+        const url = uid ? (`/api/percentage/current?uid=${encodeURIComponent(uid)}`) : '/api/percentage/current';
+        const r = await fetch(url);
+        const j = await r.json();
+        if (!r.ok || !j?.ok) return;
+        const p = j.percentage || j;
+        const dir = p?.direction;
+        const pctVal = Number(p?.value || 0);
+        const bubble = document.getElementById('percentageBubble');
+        const icon = document.getElementById('percentageIcon');
+        const value = document.getElementById('percentageValue');
+        if (bubble && icon && value) {
+          if (dir === 'up' && pctVal > 0) {
+            bubble.classList.remove('negative');
+            icon.textContent = '↗';
+            value.textContent = `+${pctVal.toFixed(2)}%`;
+          } else if (dir === 'down' && pctVal > 0) {
+            bubble.classList.add('negative');
+            icon.textContent = '↘';
+            value.textContent = `-${pctVal.toFixed(2)}%`;
+          } else {
+            bubble.classList.remove('negative');
+            icon.textContent = '→';
+            value.textContent = '0.00%';
+          }
+        }
+        try {
+          localStorage.setItem('auto_pct_direction', dir || 'neutral');
+          localStorage.setItem('auto_pct_value', String(pctVal || 0));
+        } catch {}
+      } catch {}
+    }
+    applyFromServer();
+    setInterval(applyFromServer, 30000); // every 30s
+  })();
+
+  // Listen for admin-triggered balance refresh
+  window.addEventListener('storage', function(e){
+    try {
+      if (!e) return;
+      if (e.key === 'we_balance_refresh' && e.newValue) {
+        const data = JSON.parse(e.newValue || '{}');
+        const currentUid = localStorage.getItem('we_uid') || '';
+        if (!data.uid || !currentUid || data.uid !== currentUid) return; // ignore updates for other users
+        const home = Number(data.wallet_balance_usd || 0);
+        if (Number.isFinite(home) && home > 0) {
+          const fiatEl = document.getElementById('fiatBalance');
+          if (fiatEl) {
+            fiatEl.innerHTML = `$${home.toLocaleString(undefined,{maximumFractionDigits:2})} <span style=\"font-size:14px;font-weight:700;opacity:.8;\">USD</span>`;
+          }
+          localStorage.setItem('auto_usd_balance', String(home));
+          localStorage.setItem('previous_balance', String(home));
+          (async () => {
+            try {
+              const btcPriceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+              const btcPriceJson = await btcPriceRes.json();
+              const btcPrice = btcPriceJson?.bitcoin?.usd || 0;
+              if (btcPrice > 0) {
+                const btcEq = home / btcPrice;
+                document.getElementById('btcBalance').textContent = `${btcEq.toLocaleString(undefined,{maximumFractionDigits:8})} BTC`;
+              }
+            } catch {}
+          })();
+          try { if (typeof startAutoBalanceFluctuation === 'function') startAutoBalanceFluctuation(); } catch {}
+        }
+      }
+      // Handle admin-triggered percentage updates
+      if (e.key === 'we_percentage_refresh' && e.newValue) {
+        const data = JSON.parse(e.newValue || '{}');
+        const currentUid = localStorage.getItem('we_uid') || '';
+        if (data.uid && data.uid !== currentUid) return; // if scoped to a uid, ignore others
+        const dir = data.direction;
+        const pctVal = Number(data.value || 0);
+        const fiatEl = document.getElementById('fiatBalance');
+        const bubble = document.getElementById('percentageBubble');
+        const icon = document.getElementById('percentageIcon');
+        const value = document.getElementById('percentageValue');
+        if (bubble && icon && value) {
+          if (dir === 'up' && pctVal > 0) {
+            bubble.classList.remove('negative');
+            icon.textContent = '↗';
+            value.textContent = `+${pctVal.toFixed(2)}%`;
+          } else if (dir === 'down' && pctVal > 0) {
+            bubble.classList.add('negative');
+            icon.textContent = '↘';
+            value.textContent = `-${pctVal.toFixed(2)}%`;
+          } else {
+            bubble.classList.remove('negative');
+            icon.textContent = '→';
+            value.textContent = '0.00%';
+          }
+        }
+        if (fiatEl) {
+          const currentText = fiatEl.textContent || '';
+          const current = Number(String(currentText).replace(/[^0-9.\-]/g,'') || '0');
+          if (Number.isFinite(current) && current > 0 && pctVal >= 0) {
+            const multiplier = dir === 'up' ? (1 + pctVal/100) : (dir === 'down' ? (1 - pctVal/100) : 1);
+            const newUsd = current * multiplier;
+            if (Number.isFinite(newUsd) && newUsd > 0) {
+              fiatEl.innerHTML = `$${newUsd.toLocaleString(undefined,{maximumFractionDigits:2})} <span style=\"font-size:14px;font-weight:700;opacity:.8;\">USD</span>`;
+              localStorage.setItem('auto_usd_balance', String(newUsd));
+              localStorage.setItem('auto_pct_direction', dir || 'neutral');
+              localStorage.setItem('auto_pct_value', String(pctVal || 0));
+              (async () => {
+                try {
+                  const btcPriceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                  const btcPriceJson = await btcPriceRes.json();
+                  const btcPrice = btcPriceJson?.bitcoin?.usd || 0;
+                  if (btcPrice > 0) {
+                    const btcEq = newUsd / btcPrice;
+                    document.getElementById('btcBalance').textContent = `${btcEq.toLocaleString(undefined,{maximumFractionDigits:8})} BTC`;
+                  }
+                } catch {}
+              })();
+            }
+          }
+        }
+        try { if (typeof startAutoBalanceFluctuation === 'function') startAutoBalanceFluctuation(); } catch {}
+      }
+    } catch {}
+  });
+
+</script>
+</body>
+</html>
