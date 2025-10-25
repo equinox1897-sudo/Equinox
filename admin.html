@@ -424,6 +424,9 @@
               localStorage.setItem('auto_pct_direction', direction);
               localStorage.setItem('auto_pct_value', String(direction === 'neutral' ? 0 : value));
             }
+            // Clear the applied percentage tracking so new percentage can be applied
+            localStorage.removeItem('last_applied_percentage');
+            localStorage.removeItem('last_applied_direction');
             // Trigger storage event manually for same-tab updates
             window.dispatchEvent(new StorageEvent('storage', {
               key: 'we_percentage_refresh',

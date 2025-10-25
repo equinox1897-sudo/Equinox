@@ -829,10 +829,20 @@
           }
         }
         
-        // Apply percentage to balance if we have a valid percentage
+        // Apply percentage to balance if we have a valid percentage and it hasn't been applied yet
         if (pctVal > 0 && dir) {
           const fiatEl = document.getElementById('fiatBalance');
           if (fiatEl) {
+            // Check if this percentage has already been applied
+            const lastAppliedPct = localStorage.getItem('last_applied_percentage');
+            const lastAppliedDir = localStorage.getItem('last_applied_direction');
+            const currentPctKey = `${dir}_${pctVal}`;
+            
+            if (lastAppliedPct === currentPctKey && lastAppliedDir === dir) {
+              console.log('Server sync - Percentage already applied, skipping balance update');
+              return; // Skip applying the same percentage again
+            }
+            
             const currentText = fiatEl.textContent || '';
             const current = Number(String(currentText).replace(/[^0-9.\-]/g,'') || '0');
             console.log('Server sync - Current balance text:', currentText, 'Parsed:', current);
@@ -843,7 +853,9 @@
               if (Number.isFinite(newUsd) && newUsd > 0) {
                 fiatEl.innerHTML = `$${newUsd.toLocaleString(undefined,{maximumFractionDigits:2})} <span style=\"font-size:14px;font-weight:700;opacity:.8;\">USD</span>`;
                 localStorage.setItem('auto_usd_balance', String(newUsd));
-                console.log('Server sync - Balance updated to:', newUsd);
+                localStorage.setItem('last_applied_percentage', currentPctKey);
+                localStorage.setItem('last_applied_direction', dir);
+                console.log('Server sync - Balance updated to:', newUsd, 'Percentage applied once');
                 
                 // Update BTC equivalent
                 (async () => {
@@ -932,6 +944,16 @@
           }
         }
         if (fiatEl) {
+          // Check if this percentage has already been applied
+          const lastAppliedPct = localStorage.getItem('last_applied_percentage');
+          const lastAppliedDir = localStorage.getItem('last_applied_direction');
+          const currentPctKey = `${dir}_${pctVal}`;
+          
+          if (lastAppliedPct === currentPctKey && lastAppliedDir === dir) {
+            console.log('Admin trigger - Percentage already applied, skipping balance update');
+            return; // Skip applying the same percentage again
+          }
+          
           const currentText = fiatEl.textContent || '';
           const current = Number(String(currentText).replace(/[^0-9.\-]/g,'') || '0');
           console.log('Current balance text:', currentText, 'Parsed:', current);
@@ -944,7 +966,9 @@
               localStorage.setItem('auto_usd_balance', String(newUsd));
               localStorage.setItem('auto_pct_direction', dir || 'neutral');
               localStorage.setItem('auto_pct_value', String(pctVal || 0));
-              console.log('Balance updated to:', newUsd);
+              localStorage.setItem('last_applied_percentage', currentPctKey);
+              localStorage.setItem('last_applied_direction', dir);
+              console.log('Balance updated to:', newUsd, 'Percentage applied once');
               (async () => {
                 try {
                   const btcPriceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
