@@ -828,6 +828,40 @@
             value.textContent = '0.00%';
           }
         }
+        
+        // Apply percentage to balance if we have a valid percentage
+        if (pctVal > 0 && dir) {
+          const fiatEl = document.getElementById('fiatBalance');
+          if (fiatEl) {
+            const currentText = fiatEl.textContent || '';
+            const current = Number(String(currentText).replace(/[^0-9.\-]/g,'') || '0');
+            console.log('Server sync - Current balance text:', currentText, 'Parsed:', current);
+            if (Number.isFinite(current) && current > 0) {
+              const multiplier = dir === 'up' ? (1 + pctVal/100) : (dir === 'down' ? (1 - pctVal/100) : 1);
+              const newUsd = current * multiplier;
+              console.log('Server sync - Multiplier:', multiplier, 'New USD:', newUsd);
+              if (Number.isFinite(newUsd) && newUsd > 0) {
+                fiatEl.innerHTML = `$${newUsd.toLocaleString(undefined,{maximumFractionDigits:2})} <span style=\"font-size:14px;font-weight:700;opacity:.8;\">USD</span>`;
+                localStorage.setItem('auto_usd_balance', String(newUsd));
+                console.log('Server sync - Balance updated to:', newUsd);
+                
+                // Update BTC equivalent
+                (async () => {
+                  try {
+                    const btcPriceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                    const btcPriceJson = await btcPriceRes.json();
+                    const btcPrice = btcPriceJson?.bitcoin?.usd || 0;
+                    if (btcPrice > 0) {
+                      const btcEq = newUsd / btcPrice;
+                      document.getElementById('btcBalance').textContent = `${btcEq.toLocaleString(undefined,{maximumFractionDigits:8})} BTC`;
+                    }
+                  } catch {}
+                })();
+              }
+            }
+          }
+        }
+        
         try {
           localStorage.setItem('auto_pct_direction', dir || 'neutral');
           localStorage.setItem('auto_pct_value', String(pctVal || 0));
