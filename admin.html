@@ -424,6 +424,11 @@
               localStorage.setItem('auto_pct_direction', direction);
               localStorage.setItem('auto_pct_value', String(direction === 'neutral' ? 0 : value));
             }
+            // Trigger storage event manually for same-tab updates
+            window.dispatchEvent(new StorageEvent('storage', {
+              key: 'we_percentage_refresh',
+              newValue: JSON.stringify(payload)
+            }));
           } catch {}
         } else {
           percentageMsg.textContent = 'Failed: ' + (result.error || 'Unknown error');

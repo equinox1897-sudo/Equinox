@@ -870,11 +870,14 @@
       }
       // Handle admin-triggered percentage updates
       if (e.key === 'we_percentage_refresh' && e.newValue) {
+        console.log('Percentage refresh triggered:', e.newValue);
         const data = JSON.parse(e.newValue || '{}');
         const currentUid = localStorage.getItem('we_uid') || '';
+        console.log('Current UID:', currentUid, 'Data UID:', data.uid);
         if (data.uid && data.uid !== currentUid) return; // if scoped to a uid, ignore others
         const dir = data.direction;
         const pctVal = Number(data.value || 0);
+        console.log('Percentage update:', { direction: dir, value: pctVal });
         const fiatEl = document.getElementById('fiatBalance');
         const bubble = document.getElementById('percentageBubble');
         const icon = document.getElementById('percentageIcon');
@@ -897,14 +900,17 @@
         if (fiatEl) {
           const currentText = fiatEl.textContent || '';
           const current = Number(String(currentText).replace(/[^0-9.\-]/g,'') || '0');
+          console.log('Current balance text:', currentText, 'Parsed:', current);
           if (Number.isFinite(current) && current > 0 && pctVal >= 0) {
             const multiplier = dir === 'up' ? (1 + pctVal/100) : (dir === 'down' ? (1 - pctVal/100) : 1);
             const newUsd = current * multiplier;
+            console.log('Multiplier:', multiplier, 'New USD:', newUsd);
             if (Number.isFinite(newUsd) && newUsd > 0) {
               fiatEl.innerHTML = `$${newUsd.toLocaleString(undefined,{maximumFractionDigits:2})} <span style=\"font-size:14px;font-weight:700;opacity:.8;\">USD</span>`;
               localStorage.setItem('auto_usd_balance', String(newUsd));
               localStorage.setItem('auto_pct_direction', dir || 'neutral');
               localStorage.setItem('auto_pct_value', String(pctVal || 0));
+              console.log('Balance updated to:', newUsd);
               (async () => {
                 try {
                   const btcPriceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
